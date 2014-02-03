@@ -1,7 +1,7 @@
 #
 # A marker class
 #
-define ["md5.min", "webjars!leaflet.js"], (md5) ->
+define ["md5", "leaflet"], (md5, Leaflet) ->
 
   class Marker
     constructor: (map, feature, latLng) ->
@@ -10,13 +10,13 @@ define ["md5.min", "webjars!leaflet.js"], (md5) ->
 
       # If it has a count, it's a cluster
       if feature.properties.count
-        @marker = new L.Marker(latLng,
+        @marker = new Leaflet.Marker(latLng,
           icon: createClusterMarkerIcon(feature.properties.count)
         )
       # Otherwise it's a user
       else
         userId = feature.id
-        @marker = new L.Marker(latLng,
+        @marker = new Leaflet.Marker(latLng,
           title: feature.id
         )
 
@@ -70,10 +70,10 @@ define ["md5.min", "webjars!leaflet.js"], (md5) ->
         "cluster-marker-medium"
       else
         "cluster-marker-large"
-      return new L.DivIcon(
+      return new Leaflet.DivIcon(
         html: "<div><span>" + count + "</span></div>"
         className: "cluster-marker " + className
-        iconSize: new L.Point(40, 40)
+        iconSize: new Leaflet.Point(40, 40)
       )
 
     # Reset the transition properties for the given element so that it doesn't animate

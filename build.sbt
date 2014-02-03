@@ -59,7 +59,10 @@ copyAllMochaSources <<= (extractWebJars in Assets, extractWebJars in TestAssets,
 
 mochaTests <<= (copyAllMochaSources, resourceManaged in Test, managedResources in Test) map { (workDir, testDir, _) =>
   val tests = ((testDir ** "*Test.js") +++ (testDir ** "*Spec.js") x Path.rebase(testDir, workDir)).map(_._2)
-  Process(Seq("mocha", "-R", "spec") ++ tests.map(_.getCanonicalPath), workDir, "NODE_PATH" -> (workDir / "lib").getCanonicalPath) !
+  val rc = Process(Seq("mocha", "-R", "spec") ++ tests.map(_.getCanonicalPath), workDir, "NODE_PATH" -> (workDir / "lib").getCanonicalPath).!
+  if (rc != 0) {
+    throw new TestsFailedException
+  } else ()
 }
 
 test in Test <<= (test in Test).dependsOn(mochaTests)

@@ -82,7 +82,7 @@ object PlayTestAssetsCompiler {
     }
 
   val CoffeescriptCompiler = AssetsCompiler("coffeescript-test",
-  (_ ** "*.coffee"),
+  _ ** "*.coffee",
   coffeescriptEntryPoints in Test,
   { (name, min) => name.replace(".coffee", if (min) ".min.js" else ".js") },
   { (coffeeFile, options) =>

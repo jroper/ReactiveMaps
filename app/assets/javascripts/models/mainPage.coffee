@@ -4,7 +4,7 @@
 # This class handles most of the user interactions with the buttons/menus/forms on the page, as well as manages
 # the WebSocket connection.  It delegates to other classes to manage everything else.
 #
-define ["webjars!knockout.js", "./map", "./gps", "./mockGps"], (ko, Map, Gps, MockGps) ->
+define ["knockout", "map", "gps", "mockGps"], (ko, Map, Gps, MockGps) ->
 
   class MainPageModel
     constructor: () ->

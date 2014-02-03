@@ -4,15 +4,15 @@
 #
 # Used to manually specify your position if you are not using a GPS enabled device.
 #
-define ["webjars!leaflet.js"], () ->
+define ["leaflet"], (Leaflet) ->
   class MockGps
     constructor: (ws) ->
       self = @
 
       @ws = ws
 
-      @map = L.map("mockGps")
-      new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      @map = Leaflet.map("mockGps")
+      new Leaflet.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         minZoom: 1
         maxZoom: 16
         attribution: "Map data © OpenStreetMap contributors"
@@ -29,7 +29,7 @@ define ["webjars!leaflet.js"], () ->
         position = [0, 0]
       @map.setView(position, 4)
 
-      @marker = new L.Marker(position,
+      @marker = new Leaflet.Marker(position,
         draggable: true
       ).addTo(@map)
 

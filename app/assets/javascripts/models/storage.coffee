@@ -14,7 +14,7 @@ define () ->
           localStorage.removeItem("lastArea")
     
     # Set the last viewed area
-    setLastArea: lastArea ->
+    setLastArea: (lastArea) ->
       localStorage.lastArea = JSON.stringify lastArea
 
   }
