@@ -1,7 +1,7 @@
 #
 # A marker class
 #
-define ["md5", "leaflet", "markerRenderer", "userInfo"], (md5, Leaflet, renderer, userInfo) ->
+define ["leaflet", "markerRenderer", "userInfo"], (Leaflet, renderer, userInfo) ->
 
   class Marker
     constructor: (map, feature, latLng) ->
@@ -66,11 +66,6 @@ define ["md5", "leaflet", "markerRenderer", "userInfo"], (md5, Leaflet, renderer
     # Remove the marker from the map
     remove: ->
       @map.removeLayer(@marker)
-
-    # Create the icon for the cluster marker
-
-
-
 
   return Marker
 

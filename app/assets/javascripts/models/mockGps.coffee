@@ -7,8 +7,6 @@
 define ["leaflet"], (Leaflet) ->
   class MockGps
     constructor: (ws) ->
-      self = @
-
       @ws = ws
 
       @map = Leaflet.map("mockGps")
@@ -33,8 +31,8 @@ define ["leaflet"], (Leaflet) ->
         draggable: true
       ).addTo(@map)
 
-      @marker.on "dragend", ->
-        self.sendPosition()
+      @marker.on "dragend", =>
+        @sendPosition()
 
       @sendPosition()
 

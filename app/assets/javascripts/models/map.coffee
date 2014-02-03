@@ -6,8 +6,6 @@ define ["marker", "storage", "leaflet"], (Marker, Storage, Leaflet) ->
 
   class Map
     constructor: (ws) ->
-      self = @
-
       # the map itself
       @map = Leaflet.map("map")
       new Leaflet.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -43,28 +41,28 @@ define ["marker", "storage", "leaflet"], (Marker, Storage, Leaflet) ->
 
       # When zooming starts or ends, we want to snap the markers to their proper place, so that the marker
       # animation doesn't interfere with the zoom animation.
-      @map.on "zoomstart", ->
-        self.snapMarkers()
-      @map.on "zoomend", ->
-        self.snapMarkers()
+      @map.on "zoomstart", =>
+        @snapMarkers()
+      @map.on "zoomend", =>
+        @snapMarkers()
         # Move all the markers to the preZoomMarkers
-        for id of self.markers
-          self.preZoomMarkers[id] = self.markers[id]
-        self.markers = {}
+        for id of @markers
+          @preZoomMarkers[id] = @markers[id]
+        @markers = {}
         # Tell the server about our new viewing area
-        self.updatePosition()
+        @updatePosition()
 
-      @map.on "moveend", ->
+      @map.on "moveend", =>
         # Tell the server about our new viewing area
-        self.updatePosition()
+        @updatePosition()
 
       # The clean up task for removing markers that haven't been updated in 20 seconds
-      @intervalId = setInterval(->
+      @intervalId = setInterval(=>
         time = new Date().getTime()
-        for id of self.markers
-          marker = self.markers[id]
+        for id of @markers
+          marker = @markers[id]
           if time - marker.lastSeen > 20000
-            delete self.markers[id]
+            delete @markers[id]
             marker.remove()
       , 5000)
 
@@ -75,9 +73,8 @@ define ["marker", "storage", "leaflet"], (Marker, Storage, Leaflet) ->
       # area updates.  So, we wait 500ms before sending the update, and if no further
       # updates happen, then we do it.
       clearTimeout @sendArea if @sendArea
-      self = @
-      @sendArea = setTimeout(->
-        self.doUpdatePosition()
+      @sendArea = setTimeout(=>
+        @doUpdatePosition()
       , 500)
 
     doUpdatePosition: () ->
