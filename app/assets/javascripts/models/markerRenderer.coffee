@@ -9,13 +9,9 @@ define ["leaflet", "md5", "jquery"], (Leaflet, md5) ->
 
   {
     # Render the popup for the given user
-    renderPopup: (userId, distance) ->
-      userDetails = "<p><img src='http://www.gravatar.com/avatar/" +
-        md5(userId.toLowerCase()) + "'/></p><p>" + escapeHtml(userId) + "</p>"
-      if distance
-        userDetails + "<p>Distance: " + Math.floor(distance) + " metres</p>"
-      else
-        userDetails
+    renderPopup: (userId) ->
+      "<p><img src='http://www.gravatar.com/avatar/" +
+          md5(userId.toLowerCase()) + "'/></p><p>" + escapeHtml(userId) + "</p>"
 
     # Create the cluster marker icon
     createClusterMarkerIcon: (count) ->

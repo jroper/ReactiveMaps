@@ -1,7 +1,7 @@
 #
 # A marker class
 #
-define ["leaflet", "markerRenderer", "userInfo"], (Leaflet, renderer, userInfo) ->
+define ["leaflet", "markerRenderer"], (Leaflet, renderer) ->
 
   class Marker
     constructor: (map, feature, latLng) ->
@@ -22,13 +22,6 @@ define ["leaflet", "markerRenderer", "userInfo"], (Leaflet, renderer, userInfo) 
 
         # The popup should contain the gravatar of the user and their id
         @marker.bindPopup(renderer.renderPopup(userId))
-
-        # We want to update the distance travelled every time you click on the marker
-        @marker.on "click", =>
-          userInfo.userDistance(userId).done (distance) =>
-            @marker.getPopup()
-              .setContent(renderer.renderPopup(userId, distance))
-              .update()
 
       @lastSeen = new Date().getTime()
       @marker.addTo(map)
