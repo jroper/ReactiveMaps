@@ -11,6 +11,8 @@ import play.extras.geojson._
 import models.client._
 import models.backend._
 import actors.PositionSubscriber.PositionSubscriberUpdate
+import akka.util.Timeout
+import backend.UserDistanceRegister.GetDistanceTravelled
 
 object Application extends Controller {
 
@@ -45,7 +47,9 @@ object Application extends Controller {
 
       // The users has moved their position, publish to the region
       case UserMoved(point) =>
-        Actors.regionManagerClient ! UserPosition(email, System.currentTimeMillis(), point.coordinates)
+        val userPosition = UserPosition(email, System.currentTimeMillis(), point.coordinates)
+        Actors.regionManagerClient ! userPosition
+        Actors.userDistanceRegister ! userPosition
 
       // The viewing area has changed, tell the subscriber
       case ViewingArea(area) => area.bbox.foreach { bbox =>
@@ -53,7 +57,9 @@ object Application extends Controller {
       }
     }
 
-    (iteratee, enumerator.onDoneEnumerating(system.stop(subscriber)))
+    (iteratee, enumerator.onDoneEnumerating {
+      system.stop(subscriber)
+    })
   }
 
   private def convertUpdateToClientEvent(update: PositionSubscriberUpdate): UserPositions = {
@@ -73,5 +79,19 @@ object Application extends Controller {
           properties = Some(properties))
       },
       bbox = update.area.map(area => (area.southWest, area.northEast))))
+  }
+
+  def distance(email: String) = Action.async {
+    import akka.pattern.ask
+    import scala.concurrent.duration._
+
+    implicit val timeout = Timeout(2.seconds)
+
+    (Actors.userDistanceRegister ? GetDistanceTravelled(email)).mapTo[Option[Double]].map { distance =>
+      Ok(Json.obj(
+        "email" -> email,
+        "distance" -> (distance.getOrElse(0d): Double)
+      ))
+    }
   }
 }

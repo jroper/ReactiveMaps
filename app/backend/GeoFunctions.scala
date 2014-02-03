@@ -184,4 +184,29 @@ class GeoFunctions(settings: Settings) {
     if (mod > 0) mod else mod + y
   }
 
+  /**
+   * Calculate the distance (in metres) between two points.
+   *
+   * Uses the "haversine" formula, described here:
+   *
+   * http://www.movable-type.co.uk/scripts/latlong.html
+   */
+  def distanceBetweenPoints(pointA: LatLng, pointB: LatLng): Double = {
+
+    // Setup the inputs to the formula
+    val R = 6371009d // average radius of the earth in metres
+    val dLat = Math.toRadians(pointB.lat - pointA.lat)
+    val dLng = Math.toRadians(pointB.lng - pointA.lng)
+    val latA = Math.toRadians(pointA.lat)
+    val latB = Math.toRadians(pointB.lat)
+
+    // The actual haversine formula. a and c are well known value names in the formula.
+    val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(latA) * Math.cos(latB)
+    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    val distance = R * c
+
+    distance
+  }
+
 }

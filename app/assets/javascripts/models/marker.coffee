@@ -1,7 +1,7 @@
 #
 # A marker class
 #
-define ["md5", "leaflet"], (md5, Leaflet) ->
+define ["md5", "leaflet", "markerRenderer", "userInfo"], (md5, Leaflet, renderer, userInfo) ->
 
   class Marker
     constructor: (map, feature, latLng) ->
@@ -11,7 +11,7 @@ define ["md5", "leaflet"], (md5, Leaflet) ->
       # If it has a count, it's a cluster
       if feature.properties.count
         @marker = new Leaflet.Marker(latLng,
-          icon: createClusterMarkerIcon(feature.properties.count)
+          icon: renderer.createClusterMarkerIcon(feature.properties.count)
         )
       # Otherwise it's a user
       else
@@ -21,8 +21,14 @@ define ["md5", "leaflet"], (md5, Leaflet) ->
         )
 
         # The popup should contain the gravatar of the user and their id
-        @marker.bindPopup("<p><img src='http://www.gravatar.com/avatar/" +
-          md5(userId.toLowerCase()) + "'/></p><p>" + escapeHtml(userId) + "</p>")
+        @marker.bindPopup(renderer.renderPopup(userId))
+
+        # We want to update the distance travelled every time you click on the marker
+        @marker.on "click", =>
+          userInfo.userDistance(userId).done (distance) =>
+            @marker.getPopup()
+              .setContent(renderer.renderPopup(userId, distance))
+              .update()
 
       @lastSeen = new Date().getTime()
       @marker.addTo(map)
@@ -35,7 +41,7 @@ define ["md5", "leaflet"], (md5, Leaflet) ->
       # If it's a cluster, check if the size of the cluster has changed
       if feature.properties.count
         if feature.properties.count != @feature.properties.count
-          @marker.setIcon(createClusterMarkerIcon(feature.properties.count))
+          @marker.setIcon(renderer.createClusterMarkerIcon(feature.properties.count))
 
       # Animate the marker - calculate how long it took to get from its last position
       # to current, and then set the CSS3 transition time to equal that
@@ -45,8 +51,8 @@ define ["md5", "leaflet"], (md5, Leaflet) ->
       if time > 0
         if time > 10000
           time = 10000
-        transition(@marker._icon, time)
-        transition(@marker._shadow, time) if @marker._shadow
+        renderer.transition(@marker._icon, time)
+        renderer.transition(@marker._shadow, time) if @marker._shadow
 
       # Finally update feature
       @feature = feature
@@ -54,53 +60,16 @@ define ["md5", "leaflet"], (md5, Leaflet) ->
 
     # Snap the marker to where it should be, ie stop animating
     snap: ->
-      resetTransition @marker._icon
-      resetTransition @marker._shadow if @marker._shadow
+      renderer.resetTransition @marker._icon
+      renderer.resetTransition @marker._shadow if @marker._shadow
 
     # Remove the marker from the map
     remove: ->
       @map.removeLayer(@marker)
 
     # Create the icon for the cluster marker
-    createClusterMarkerIcon = (count) ->
-      # Style according to the number of users in the cluster
-      className = if count < 10
-        "cluster-marker-small"
-      else if count < 100
-        "cluster-marker-medium"
-      else
-        "cluster-marker-large"
-      return new Leaflet.DivIcon(
-        html: "<div><span>" + count + "</span></div>"
-        className: "cluster-marker " + className
-        iconSize: new Leaflet.Point(40, 40)
-      )
 
-    # Reset the transition properties for the given element so that it doesn't animate
-    resetTransition = (element) ->
-      updateTransition = (element, prefix) ->
-        element.style[prefix + "transition"] = ""
-      updateTransition element, "-webkit-"
-      updateTransition element, "-moz-"
-      updateTransition element, "-o-"
-      updateTransition element, ""
 
-    # Reset the transition properties for the given element so that it animates when it moves
-    transition = (element, time) ->
-      updateTransition = (element, prefix) ->
-        element.style[prefix + "transition"] = prefix + "transform " + time + "ms linear"
-      updateTransition element, "-webkit-"
-      updateTransition element, "-moz-"
-      updateTransition element, "-o-"
-      updateTransition element, ""
-
-    # Escape the given unsafe user input
-    escapeHtml = (unsafe) ->
-      return unsafe.replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;")
 
 
   return Marker

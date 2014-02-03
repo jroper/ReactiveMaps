@@ -8,6 +8,8 @@ require.config {
     gps: "./models/gps"
     mockGps: "./models/mockGps"
     marker: "./models/marker"
+    markerRenderer: "./models/markerRenderer"
+    userInfo: "./models/userInfo"
     storage: "./models/storage"
     md5: "./md5.min"
   }
@@ -16,6 +18,7 @@ require.config {
       knockout: "webjars!knockout.js"
       bootstrap: "webjars!bootstrap.js"
       leaflet: "webjars!leaflet.js"
+      jquery: "webjars!jquery.js"
     }
   }
 }

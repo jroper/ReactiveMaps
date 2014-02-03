@@ -2,7 +2,7 @@ package actors
 
 import play.api._
 import play.api.libs.concurrent.Akka
-import backend.{Settings, BotManager, RegionManager}
+import backend.{UserDistanceRegister, Settings, BotManager, RegionManager}
 import akka.cluster.Cluster
 import java.net.URL
 
@@ -18,6 +18,8 @@ object Actors {
    * Get the region manager client.
    */
   def regionManagerClient(implicit app: Application) = actors.regionManagerClient
+
+  def userDistanceRegister(implicit app: Application) = actors.userDistanceRegister
 }
 
 /**
@@ -39,9 +41,11 @@ class Actors(app: Application) extends Plugin {
         val url = app.resource("bots/" + id + ".json")
         url.map(url => url :: findUrls(id + 1)).getOrElse(Nil)
       }
-      system.actorOf(BotManager.props(regionManagerClient, findUrls(1)))
+      system.actorOf(BotManager.props(regionManagerClient, userDistanceRegister, findUrls(1)))
     }
   }
 
   private lazy val regionManagerClient = system.actorOf(RegionManagerClient.props(), "regionManagerClient")
+
+  private lazy val userDistanceRegister = system.actorOf(UserDistanceRegister.props(), "userDistanceRegister")
 }

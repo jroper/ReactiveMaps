@@ -3,12 +3,13 @@
 # ~~~~
 
 # Home page
-GET        /                    controllers.Application.index
+GET        /                      controllers.Application.index
 
 # The websocket
-GET        /stream/:email       controllers.Application.stream(email)
+GET        /stream/:email         controllers.Application.stream(email)
+GET        /user/:email/distance  controllers.Application.distance(email)
 
 # WebJars and static assets
-GET         /lib/require.js        controllers.WebJarAssets.requirejs
-GET         /webjars/*file         controllers.WebJarAssets.at(file)
-GET         /assets/*file          controllers.Assets.at(path="/public", file)
+GET        /lib/require.js        controllers.WebJarAssets.requirejs
+GET        /webjars/*file         controllers.WebJarAssets.at(file)
+GET        /assets/*file          controllers.Assets.at(path="/public", file)

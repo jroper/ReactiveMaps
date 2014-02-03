@@ -9,8 +9,9 @@ import models.backend.BoundingBox
 import scala.concurrent.forkjoin.ThreadLocalRandom
 
 object GeoJsonBot {
-  def props(trail: LineString[LatLng], offset: (Double, Double), userId: String, regionManagerClient: ActorRef): Props =
-    Props(classOf[GeoJsonBot], trail, offset, userId, regionManagerClient)
+  def props(trail: LineString[LatLng], offset: (Double, Double), userId: String, regionManagerClient: ActorRef,
+            userDistanceRegister: ActorRef): Props =
+    Props(classOf[GeoJsonBot], trail, offset, userId, regionManagerClient, userDistanceRegister)
 
   private case object Step
   private case object Zoom
@@ -20,7 +21,7 @@ object GeoJsonBot {
  * A bot that walks back and forth along a GeoJSON LineString.
  */
 class GeoJsonBot(trail: LineString[LatLng], offset: (Double, Double), userId: String,
-                 regionManagerClient: ActorRef) extends Actor {
+                 regionManagerClient: ActorRef, userDistanceRegister: ActorRef) extends Actor {
 
   import GeoJsonBot._
 
@@ -47,6 +48,7 @@ class GeoJsonBot(trail: LineString[LatLng], offset: (Double, Double), userId: St
       val c = trail.coordinates(pos)
       val userPos = UserPosition(userId, System.currentTimeMillis, LatLng(c.lat + latOffset, c.lng + lngOffset))
       regionManagerClient ! userPos
+      userDistanceRegister ! userPos
 
       stepCount += 1
       if (stepCount % 30 == 0) {
