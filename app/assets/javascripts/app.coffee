@@ -9,6 +9,7 @@ require.config {
     mockGps: "./models/mockGps"
     marker: "./models/marker"
     markerRenderer: "./models/markerRenderer"
+    userInfo: "./models/userInfo"
     storage: "./models/storage"
     md5: "./md5.min"
   }

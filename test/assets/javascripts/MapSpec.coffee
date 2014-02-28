@@ -1,12 +1,3 @@
-requirejs = require "requirejs"
-requirejs.config {
-    nodeRequire: require
-    baseUrl: __dirname
-}
-
-Squire = requirejs "Squire"
-assert = requirejs "assert"
-
 # Mocks
 class LatLng
   constructor: (lat, lng) ->
@@ -72,7 +63,7 @@ testMap = (test) ->
       .mock("marker", MM)
       .mock("storage", storage)
       .mock("leaflet", leaflet)
-      .require ["./models/map"], (Map) ->
+      .require ["javascripts/models/map"], (Map) ->
         test(leaflet, storage, Map, done)
 
 describe "Map", ->

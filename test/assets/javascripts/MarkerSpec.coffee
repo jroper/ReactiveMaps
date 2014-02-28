@@ -1,12 +1,3 @@
-requirejs = require "requirejs"
-requirejs.config {
-  nodeRequire: require
-  baseUrl: __dirname
-}
-
-Squire = requirejs "Squire"
-assert = requirejs "assert"
-
 # Mocks
 class MockPromise
   constructor: (value) ->
@@ -22,6 +13,11 @@ class LatLng
 class MockPopup
   constructor: (content) ->
     @content = content
+  setContent: (content) ->
+    @content = content
+    @
+  update: ->
+
 
 class MockMarker
   constructor: (latLng, options) ->
@@ -37,14 +33,26 @@ class MockMarker
     @options.icon = icon
   addTo: (map) ->
     @addedTo = map
+  on: (type, callback) ->
+    @onClick = callback
+
 
 class MockMarkerRenderer
-  renderPopup: (userId) ->
-    "Popup " + userId
+  renderPopup: (userId, distance) ->
+    if distance
+      userId + ":" + distance
+    else
+      "Popup " + userId
+
   createClusterMarkerIcon: (count) ->
     "cluster of " + count
   resetTranstion: ->
   transition: ->
+
+class MockUserInfo
+  users: {}
+  userDistance: (userId) ->
+    new MockPromise(@users[userId])
 
 class MockLeaflet
   Marker: MockMarker
@@ -58,15 +66,18 @@ testMarker = (test) ->
     # Create mocks
     leaflet = new MockLeaflet()
     renderer = new MockMarkerRenderer()
+    userInfo = new MockUserInfo()
 
     # Mockout require js environment
     new Squire()
     .mock("markerRenderer", renderer)
     .mock("leaflet", leaflet)
-    .require ["./models/marker"], (Marker) ->
+    .mock("userInfo", userInfo)
+    .require ["javascripts/models/marker"], (Marker) ->
         test({
           leaflet: leaflet,
-          renderer: renderer
+          renderer: renderer,
+          userInfo: userInfo
         }, Marker)
         done()
 
@@ -123,3 +134,9 @@ describe "Marker", ->
       id: "somecluster"
     }, new LatLng(20, 30))
     assert.equal("cluster of 20", marker.marker.options.icon)
+
+  it "should update the popup with the current distance when clicked", testMarker (deps, Marker) ->
+     marker = new Marker(new MockMap(), single, new LatLng(10, 20))
+     deps.userInfo.users["userid"] = 50
+     marker.marker.onClick()
+     assert.equal("userid:50", marker.marker.popup.content)
