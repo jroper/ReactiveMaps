@@ -1,5 +1,6 @@
 logs
-project/project
+project/typesafe.properties
+project/activator-tutorial-generator.sbt
 project/target
 target
 tmp
@@ -17,4 +18,4 @@ dist
 .cache
 bin
 .DS_Store
-
+activator-sbt-*-shim.sbt
