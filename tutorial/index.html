@@ -465,15 +465,17 @@
     </p>
     <pre><code>
     &lt;path to activator dir&gt;/activator 
-      -Dakka.remote.netty.tcp.port=0 
-      -Dakka.cluster.roles.1=backend-region 
+      -Dakka.remote.netty.tcp.port=0
+      -Dakka.cluster.seed-nodes.1="akka.tcp://application@127.0.0.1:2552
+      -Dakka.cluster.roles.1=backend-region
       "run-main backend.Main"
     </code></pre>
     
     <p>
       This runs the <a href="#code/app/backend/Main.scala" class="shortcut">backend.Main</a> class and
       overrides the configuration to bind Akka remoting to a random available port and use the "backend-region"
-      cluster role for this node.
+      cluster role for this node. It also declares the node that is running as a seed node so that this
+      node can find the already established cluster.
     </p> 
     
     <p>
@@ -507,7 +509,8 @@
     &lt;path to activator dir&gt;/activator 
       -Dhttp.port=9001
       -Dakka.remote.netty.tcp.port=0
-      -Dakka.cluster.roles.1=frontend 
+      -Dakka.cluster.seed-nodes.1="akka.tcp://application@127.0.0.1:2552
+      -Dakka.cluster.roles.1=frontend
       run
     </code></pre>
     <p>
