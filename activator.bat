@@ -213,7 +213,7 @@ rem We don't even bother with UNC paths.
 set JAVA_FRIENDLY_HOME_1=/!ACTIVATOR_HOME:\=/!
 set JAVA_FRIENDLY_HOME=/!JAVA_FRIENDLY_HOME_1: =%%20!
 
-set REPO_OPTS=-Dsbt.repository.config=./repositories
+set REPO_OPTS=-Dsbt.repository.config=./repositories -Dsbt.override.build.repos=true
 
 rem Checks if the command contains spaces to know if it should be wrapped in quotes or not
 set NON_SPACED_CMD=%_JAVACMD: =%
