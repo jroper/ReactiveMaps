@@ -331,4 +331,4 @@ elif [[ -f "$java_opts_config_home" ]]; then
   addConfigOpts $(loadConfigFile "$java_opts_config_home")
 fi
 
-run "$@"
+run -Dsbt.repository.config=./repositories "$@"
